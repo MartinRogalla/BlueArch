@@ -20,7 +20,7 @@
 #include "unlock_indicator.h"
 #include "xinerama.h"
 
-#define BUTTON_RADIUS 90
+#define BUTTON_RADIUS 50
 #define BUTTON_SPACE (BUTTON_RADIUS + 5)
 #define BUTTON_CENTER (BUTTON_RADIUS + 5)
 #define BUTTON_DIAMETER (2 * BUTTON_SPACE)
@@ -131,7 +131,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         uint32_t rgb16[3] = {(strtol(strgroups[0], NULL, 16)),
                              (strtol(strgroups[1], NULL, 16)),
                              (strtol(strgroups[2], NULL, 16))};
-        cairo_set_source_rgb(xcb_ctx, rgb16[0] / 255.0, rgb16[1] / 255.0, rgb16[2] / 255.0);
+        cairo_set_source_rgb(xcb_ctx, rgb16[0] / 0.0, rgb16[1] / 0.0, rgb16[2] / 0.0);
         cairo_rectangle(xcb_ctx, 0, 0, resolution[0], resolution[1]);
         cairo_fill(xcb_ctx);
     }
@@ -139,7 +139,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
     if (unlock_state >= STATE_KEY_PRESSED && unlock_indicator) {
         cairo_scale(ctx, scaling_factor(), scaling_factor());
         /* Draw a (centered) circle with transparent background. */
-        cairo_set_line_width(ctx, 10.0);
+        cairo_set_line_width(ctx, 5.0);
         cairo_arc(ctx,
                   BUTTON_CENTER /* x */,
                   BUTTON_CENTER /* y */,
@@ -151,10 +151,10 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
          * (currently verifying, wrong password, or default) */
         switch (pam_state) {
             case STATE_PAM_VERIFY:
-                cairo_set_source_rgba(ctx, 0, 114.0/255, 255.0/255, 0.75);
+                cairo_set_source_rgba(ctx, 0, 0.0/255, 0.0/255, 0.75);
                 break;
             case STATE_PAM_WRONG:
-                cairo_set_source_rgba(ctx, 250.0/255, 0, 0, 0.75);
+                cairo_set_source_rgba(ctx, 0.0/255, 0, 0, 0.75);
                 break;
             default:
                 cairo_set_source_rgba(ctx, 0, 0, 0, 0.75);
@@ -164,13 +164,13 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
         switch (pam_state) {
             case STATE_PAM_VERIFY:
-                cairo_set_source_rgb(ctx, 51.0/255, 0, 250.0/255);
+                cairo_set_source_rgb(ctx, 0.0/255, 0, 0.0/255);
                 break;
             case STATE_PAM_WRONG:
-                cairo_set_source_rgb(ctx, 125.0/255, 51.0/255, 0);
+                cairo_set_source_rgb(ctx, 0.0/255, 0.0/255, 0);
                 break;
             case STATE_PAM_IDLE:
-                cairo_set_source_rgb(ctx, 51.0/255, 125.0/255, 0);
+                cairo_set_source_rgb(ctx, 0.0/255, 0.0/255, 0);
                 break;
         }
         cairo_stroke(ctx);
@@ -186,23 +186,25 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                   2 * M_PI);
         cairo_stroke(ctx);
 
-        cairo_set_line_width(ctx, 10.0);
+        cairo_set_line_width(ctx, 3.0);
 
         /* Display a (centered) text of the current PAM state. */
         char *text = NULL;
         /* We don't want to show more than a 3-digit number. */
         char buf[4];
 
-        cairo_set_source_rgb(ctx, 0, 0, 0);
-        cairo_set_font_size(ctx, 28.0);
+        cairo_set_font_size(ctx, 12.0);
         switch (pam_state) {
             case STATE_PAM_VERIFY:
-                text = "verifying…";
+                cairo_set_source_rgb(ctx, 0.0/255, 166.0/255, 214.0/255);
+                text = "Verifying...";
                 break;
             case STATE_PAM_WRONG:
-                text = "wrong!";
+                cairo_set_source_rgb(ctx, 255.0/255, 0, 91.0/255);
+                text = "Incorrect.";
                 break;
             default:
+                cairo_set_source_rgb(ctx, 0, 0, 0);
                 if (show_failed_attempts && failed_attempts > 0){
                     if (failed_attempts > 999) {
                         text = "> 999";
@@ -211,7 +213,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                         text = buf;
                     }
                     cairo_set_source_rgb(ctx, 1, 0, 0);
-                    cairo_set_font_size(ctx, 32.0);
+                    cairo_set_font_size(ctx, 12.0);
                 }
                 break;
         }
@@ -244,10 +246,10 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                       highlight_start + (M_PI / 3.0));
             if (unlock_state == STATE_KEY_ACTIVE) {
                 /* For normal keys, we use a lighter green. */
-                cairo_set_source_rgb(ctx, 51.0/255, 219.0/255, 0);
+                cairo_set_source_rgb(ctx, 0.0/255, 166.0/255,  214.0/255);
             } else {
                 /* For backspace, we use red. */
-                cairo_set_source_rgb(ctx, 219.0/255, 51.0/255, 0);
+                cairo_set_source_rgb(ctx, 255.0/255, 0.0/255, 91.0/255);
             }
             cairo_stroke(ctx);
 
